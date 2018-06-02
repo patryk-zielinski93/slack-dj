@@ -23,6 +23,9 @@ services:
       backend:
         aliases:
           - redis
+      streaming:
+        aliases:
+          - redis
 
   slack_dj_icecast:
     container_name: ${ICECAST_CONTAINER_NAME}
@@ -50,9 +53,24 @@ services:
       streaming:
         aliases:
           - ices
+
+  slack_dj_backend:
+    container_name: ${BACKEND_CONTAINER_NAME}
+    build:
+      dockerfile: Dockerfile
+      context: ./src/backend
+      args:
+        - LOCAL_USER_ID=${LOCAL_USER_ID}
+    volumes:
+      - ./src/backend:/app
+    environment:
+      - VIRTUAL_HOST=${BACKEND_URL}
+      - VIRTUAL_PORT=8888
+      - LOCAL_USER_ID=${LOCAL_USER_ID}
+    networks:
       backend:
         aliases:
-          - ices
+          - backend
 
 networks:
   streaming:
