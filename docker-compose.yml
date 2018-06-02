@@ -43,7 +43,7 @@ services:
       dockerfile: Dockerfile
       context: ./src/ices
     volumes:
-      - ./src/bot/src/server/public/tracks:/tracks
+      - ./src/bot/server/public/tracks:/tracks
     depends_on:
       - slack_dj_icecast
     networks:
