@@ -1,0 +1,65 @@
+version: '3.6'
+services:
+  slack_dj_nginx_proxy:
+    container_name: ${NGINX_PROXY_CONTAINER_NAME}
+    build:
+      dockerfile: Dockerfile
+      context: ./src/nginx-proxy
+    ports:
+      - '80:80'
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - streaming
+      - frontend
+      - backend
+
+  slack_dj_redis:
+    container_name: ${REDIS_CONTAINER_NAME}
+    volumes:
+      - ./data/redis:/data
+    image: redis:alpine
+    networks:
+      backend:
+        aliases:
+          - redis
+
+  slack_dj_icecast:
+    container_name: ${ICECAST_CONTAINER_NAME}
+    build:
+      dockerfile: Dockerfile
+      context: ./src/icecast
+    environment:
+      - VIRTUAL_HOST=${ICECAST_URL}
+      - VIRUTAL_PORT=8000
+    networks:
+      streaming:
+        aliases:
+          - icecast
+
+  slack_dj_ices:
+    container_name: ${ICES_CONTAINER_NAME}
+    build:
+      dockerfile: Dockerfile
+      context: ./src/ices
+    volumes:
+      - ./src/bot/src/server/public/tracks:/tracks
+    depends_on:
+      - slack_dj_icecast
+    networks:
+      streaming:
+        aliases:
+          - ices
+      backend:
+        aliases:
+          - ices
+
+networks:
+  streaming:
+    driver: 'bridge'
+
+  frontend:
+    driver: 'bridge'
+
+  backend:
+    driver: 'bridge'
