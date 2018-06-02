@@ -1,0 +1,14 @@
+{
+  "npmScope": "slack-dj",
+  "projects": {
+    "client": {
+      "tags": [
+        "client",
+        "slack-dj"
+      ]
+    },
+    "client-e2e": {
+      "tags": []
+    }
+  }
+}
